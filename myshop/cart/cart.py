@@ -5,15 +5,15 @@ from shop.models import Product
 
 class Cart(object):
     def __init__(self, request):
-        # Ініціалізує корзину користувача
+        # Инициализация корзины пользователя
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
         if not cart:
-            # Зберігає корзину користувача в сесії
+            # Сохраняем корзину пользователя в сессию
             cart = self.session[settings.CART_SESSION_ID] = {}
         self.cart = cart
 
-    # Добавлення товару в корзину користувача або обновлення його кількості
+# Добавление товара в корзину пользователя или обновление количества товара
     def add(self, product, quantity=1, update_quantity=False):
         product_id = str(product.id)
         if product_id not in self.cart:
@@ -25,9 +25,10 @@ class Cart(object):
             self.cart[product_id]['quantity'] += quantity
         self.save()
 
-    # збереженя даних в сесію
+    # Сохранение данных в сессию
     def save(self):
         self.session[settings.CART_SESSION_ID] = self.cart
+        # Указываем, что сессия изменена
         self.session.modified = True
 
     def remove(self, product):
@@ -36,6 +37,7 @@ class Cart(object):
             del self.cart[product_id]
             self.save()
 
+# Итерация по товарам
     def __iter__(self):
         product_ids = self.cart.keys()
         products = Product.objects.filter(id__in=product_ids)
@@ -47,6 +49,7 @@ class Cart(object):
             item['total_price'] = item['price'] * item['quantity']
             yield item
 
+    # Количество товаров
     def __len__(self):
         return sum(item['quantity'] for item in self.cart.values())
 

@@ -18,7 +18,6 @@ class Category(models.Model):
     def get_absolute_url(self):
         return reverse('shop:ProductListByCategory', args=[self.slug])
 
-
 # Модель продукта
 class Product(models.Model):
     category = models.ForeignKey(Category, related_name='products', verbose_name="Категория")
